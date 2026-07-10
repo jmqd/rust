@@ -174,6 +174,35 @@ fn iterator_len() {
 }
 
 #[test]
+fn iterator_as_ref() {
+    fn remaining<T, I>(iter: &I) -> &[T]
+    where
+        I: Iterator<Item = T> + AsRef<[T]>,
+    {
+        iter.as_ref()
+    }
+
+    let mut iter = IntoIterator::into_iter([0, 1, 2, 3, 4]);
+    assert_eq!(remaining(&iter), &[0, 1, 2, 3, 4]);
+
+    assert_eq!(iter.next(), Some(0));
+    assert_eq!(remaining(&iter), &[1, 2, 3, 4]);
+
+    assert_eq!(iter.next_back(), Some(4));
+    assert_eq!(remaining(&iter), &[1, 2, 3]);
+
+    iter.by_ref().for_each(drop);
+    assert_eq!(remaining(&iter), &[]);
+
+    let empty = IntoIterator::into_iter([] as [i32; 0]);
+    assert_eq!(remaining(&empty), &[]);
+
+    let (a, b) = (1, 2);
+    let references = IntoIterator::into_iter([&a, &b]);
+    assert_eq!(remaining(&references), &[&a, &b]);
+}
+
+#[test]
 fn iterator_count() {
     let v = [0, 1, 2, 3, 4];
     assert_eq!(IntoIterator::into_iter(v.clone()).count(), 5);

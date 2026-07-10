@@ -36,5 +36,9 @@ pub fn yes_debug() -> impl Debug {
     IntoIterator::into_iter([0i32; 33])
 }
 
+pub fn yes_as_ref() -> impl AsRef<[i32]> {
+    IntoIterator::into_iter([0i32; 33])
+}
+
 
 fn main() {}
