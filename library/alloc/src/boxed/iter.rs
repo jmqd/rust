@@ -250,6 +250,14 @@ impl<T, const N: usize, A: Allocator> BoxedArrayIntoIter<T, N, A> {
     }
 }
 
+#[stable(feature = "array_into_iter_as_ref", since = "CURRENT_RUSTC_VERSION")]
+impl<T, const N: usize, A: Allocator> AsRef<[T]> for BoxedArrayIntoIter<T, N, A> {
+    #[inline]
+    fn as_ref(&self) -> &[T] {
+        self.as_slice()
+    }
+}
+
 #[stable(feature = "boxed_array_value_iter", since = "CURRENT_RUSTC_VERSION")]
 impl<T, const N: usize, A: Allocator> Iterator for BoxedArrayIntoIter<T, N, A> {
     type Item = T;

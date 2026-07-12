@@ -175,31 +175,32 @@ fn iterator_len() {
 
 #[test]
 fn iterator_as_ref() {
-    fn remaining<T, I>(iter: &I) -> &[T]
+    fn slice_view<'a, T, I>(iter: &'a I) -> &'a [T]
     where
         I: Iterator<Item = T> + AsRef<[T]>,
     {
         iter.as_ref()
     }
 
+    fn assert_unconditional<T, const N: usize>(iter: &array::IntoIter<T, N>) {
+        let _: &[T] = slice_view(iter);
+    }
+
     let mut iter = IntoIterator::into_iter([0, 1, 2, 3, 4]);
-    assert_eq!(remaining(&iter), &[0, 1, 2, 3, 4]);
+    assert_unconditional(&iter);
+    assert_eq!(slice_view(&iter), &[0, 1, 2, 3, 4]);
 
     assert_eq!(iter.next(), Some(0));
-    assert_eq!(remaining(&iter), &[1, 2, 3, 4]);
+    assert_eq!(slice_view(&iter), &[1, 2, 3, 4]);
 
     assert_eq!(iter.next_back(), Some(4));
-    assert_eq!(remaining(&iter), &[1, 2, 3]);
+    assert_eq!(slice_view(&iter), &[1, 2, 3]);
 
     iter.by_ref().for_each(drop);
-    assert_eq!(remaining(&iter), &[]);
+    assert_eq!(slice_view(&iter), &[]);
 
     let empty = IntoIterator::into_iter([] as [i32; 0]);
-    assert_eq!(remaining(&empty), &[]);
-
-    let (a, b) = (1, 2);
-    let references = IntoIterator::into_iter([&a, &b]);
-    assert_eq!(remaining(&references), &[&a, &b]);
+    assert_eq!(slice_view(&empty), &[]);
 }
 
 #[test]

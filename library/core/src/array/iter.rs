@@ -230,8 +230,9 @@ impl<T, const N: usize> IntoIter<T, N> {
     }
 }
 
-#[stable(feature = "array_intoiter_as_ref", since = "CURRENT_RUSTC_VERSION")]
+#[stable(feature = "array_into_iter_as_ref", since = "CURRENT_RUSTC_VERSION")]
 impl<T, const N: usize> AsRef<[T]> for IntoIter<T, N> {
+    #[inline]
     fn as_ref(&self) -> &[T] {
         self.as_slice()
     }

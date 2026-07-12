@@ -60,6 +60,23 @@ fn box_deref_lval() {
     assert_eq!(x.get(), 1000);
 }
 
+#[test]
+fn boxed_array_into_iter_as_ref() {
+    fn slice_view<T, I>(iter: &I) -> &[T]
+    where
+        I: Iterator<Item = T> + AsRef<[T]>,
+    {
+        iter.as_ref()
+    }
+
+    let mut iter = Box::new([0, 1, 2, 3, 4]).into_iter();
+    assert_eq!(slice_view(&iter), &[0, 1, 2, 3, 4]);
+
+    assert_eq!(iter.next(), Some(0));
+    assert_eq!(iter.next_back(), Some(4));
+    assert_eq!(slice_view(&iter), &[1, 2, 3]);
+}
+
 /// Test that a panic from a destructor does not leak the allocation.
 #[test]
 #[cfg_attr(not(panic = "unwind"), ignore = "test requires unwinding support")]
